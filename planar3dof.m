@@ -1,43 +1,43 @@
 clear;
 clear L
 
-save_figure = true;
-plot_figures = true;
+save_figure = false;
+plot_figures = false;
 
 L(1) = Link([ 0 0 0.5	0	0], 'standard');
 L(2) = Link([ 0 0 0.5	0	0], 'standard');
 L(3) = Link([ 0 0 0.5	0	0], 'standard');
 
 
-%syms t1 t2 t3;
+syms t1 t2 t3;
 
-%x = [1 0 0]';
-%y = [0 1 0]';
-%z = [0 0 1]';
-
-
-%h1 = z;
-%h2 = z;
-%h3 = z;
+x = [1 0 0]';
+y = [0 1 0]';
+z = [0 0 1]';
 
 
-%R01 = rotz(t1);
-%R12 = rotz(t2);
-%R23 = rotz(t3);
+h1 = z;
+h2 = z;
+h3 = z;
 
-%R02 = R01 * R12;
-%R03 = R02 * R23;
 
-%p01 = 0;
-%p12 = 0.5*x;
-%p23 = 0.5*x;
-%p3E = 0.5*x;
+R01 = rotz(t1);
+R12 = rotz(t2);
+R23 = rotz(t3);
 
-%p3E_0 = R03 * p3E;
-%p2E_0 = R02 * p23 + p3E_0;
-%p1E_0 = R01 * p12 + p2E_0;
+R02 = R01 * R12;
+R03 = R02 * R23;
 
-%JE_0 = [ cross(h1, p1E_0) cross(h2, p2E_0) cross(h3, p3E_0); h1 h2 h3 ];
+p01 = 0;
+p12 = 0.5*x;
+p23 = 0.5*x;
+p3E = 0.5*x;
+
+p3E_0 = R03 * p3E;
+p2E_0 = R02 * p23 + p3E_0;
+p1E_0 = R01 * p12 + p2E_0;
+
+JE_0 = [ cross(h1, p1E_0) cross(h2, p2E_0) cross(h3, p3E_0); h1 h2 h3 ];
 
 
 %
@@ -49,8 +49,8 @@ qstretch = [0 0 -pi/2];
 q0 = [pi -pi/2 -pi/2];
 
 
-%ex2_func = matlabFunction(JE_0);
-%JA = ex2_func(qstretch(1), qstretch(2), qstretch(3));
+ex2_func = matlabFunction(JE_0);
+JA = ex2_func(qstretch(1), qstretch(2), qstretch(3));
 
 
 planar = SerialLink(L);
@@ -104,7 +104,7 @@ if plot_figures
     end
 end
 
-for i = 1:3 % controle 1, 2, 2a1, 2a100 e 2b1
+for i = 1:1 % controle 1, 2, 2a1, 2a100 e 2b1
     figure(1);
     close(1);
     K0 = 0;
@@ -113,7 +113,7 @@ for i = 1:3 % controle 1, 2, 2a1, 2a100 e 2b1
             ctrl = 1
             ctrl_s = '1';
             K = 50;
-            sim('planar3dof_sim');
+            %sim('planar3dof_sim');
         case 2 % controle 2
             ctrl = 2
             ctrl_s = '2a';

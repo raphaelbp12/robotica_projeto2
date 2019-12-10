@@ -137,7 +137,7 @@ Como o objetivo é apenas controlar a posição do manipulador, pode-se ignorar 
 
 \begin{figure}[!ht]
 \centering
-\includegraphics[width=1\textwidth]{figs/ex1_ready.pdf}
+\includegraphics[width=0.5\textwidth]{figs/ex1_ready.pdf}
 \caption{Manipulador Antropomórfico na posição inicial}
 \label{fig:ex1_ready}
 \end{figure}
@@ -157,13 +157,13 @@ q_0 = [0, 0, 0, \pi/2] \\
 \begin{tabular}{|c|c|c|c|c|c|}
 \hline
 Junta  & $\alpha (rad)$ & $A (m)$ & $\theta (rad)$ & $D (m)$ & $Offset (rad)$ \\ \hline
-$1$  & $\pi/2$ & 0 & 0 & 0 & 0 \\ \hline
-$2$  & $\pi/2$ & 0 & 0 & 0 & $\pi$ \\ \hline
-$3$  & $\pi/2$ & 0 & 0 & $-0.4208$ & $\pi$ \\ \hline
-$4$  & $\pi/2$ & 0 & 0 & 0 & $\pi$ \\ \hline
-$5$  & $\pi/2$ & 0 & 0 & $-0.3143$ & $\pi$ \\ \hline
-$6$  & $\pi/2$ & 0 & 0 & 0 & $\pi$ \\ \hline
-$7$  & $\pi$ & 0 & 0 & 0 & $\pi$ \\ \hline
+$1$  & $\pi/2$ & 0 & $\theta_1$ & 0 & 0 \\ \hline
+$2$  & $\pi/2$ & 0 & $\theta_2$ & 0 & $\pi$ \\ \hline
+$3$  & $\pi/2$ & 0 & $\theta_3$ & $-0.4208$ & $\pi$ \\ \hline
+$4$  & $\pi/2$ & 0 & $\theta_4$ & 0 & $\pi$ \\ \hline
+$5$  & $\pi/2$ & 0 & $\theta_5$ & $-0.3143$ & $\pi$ \\ \hline
+$6$  & $\pi/2$ & 0 & $\theta_6$ & 0 & $\pi$ \\ \hline
+$7$  & $\pi$   & 0 & $\theta_7$ & 0 & $\pi$ \\ \hline
 
 \end{tabular}
 \end{table}
@@ -324,20 +324,20 @@ No caso de não ser possível calcular a derivada da trajetória e, dependendo d
 \centering
   \begin{minipage}{\linewidth}
   \centering
-    \begin{subfigure}[b]{1\textwidth}
-    \includegraphics[width=1\textwidth]{figs/ex1_a_2_x.pdf}
-    \caption{$x_d$ e $x$}
-    \label{fig:ex1_a_2_x}
+    \begin{subfigure}[b]{0.4\textwidth}
+    		\includegraphics[width=1\textwidth]{figs/ex1_a_2_x.pdf}
+    		\caption{$x_d$ e $x$}
+    		\label{fig:ex1_a_2_x}
     \end{subfigure}
   \end{minipage}
   \begin{minipage}{\linewidth}
   \centering
-    \begin{subfigure}[b]{0.45\textwidth}
-    \includegraphics[width=1\textwidth]{figs/ex1_a_2_e.pdf}
-    \caption{$e = x_d - x$}
-    \label{fig:ex1_a_2_e}
+    \begin{subfigure}[b]{0.4\textwidth}
+    		\includegraphics[width=1\textwidth]{figs/ex1_a_2_e.pdf}
+    		\caption{$e = x_d - x$}
+    		\label{fig:ex1_a_2_e}
     \end{subfigure}
-    \begin{subfigure}[b]{0.45\textwidth}
+    \begin{subfigure}[b]{0.4\textwidth}
     \includegraphics[width=1\textwidth]{figs/ex1_a_2_dq.pdf}
     \caption{$u = \dot{\theta}$}
     \label{fig:ex1_a_2_dq}
@@ -347,12 +347,11 @@ No caso de não ser possível calcular a derivada da trajetória e, dependendo d
 \label{fig:ex1_a_2}
 \end{figure}
 
-
 \begin{figure}[!ht]
 \centering
   \begin{minipage}{\linewidth}
   \centering
-    \begin{subfigure}[b]{1\textwidth}
+    \begin{subfigure}[b]{0.4\textwidth}
     \includegraphics[width=1\textwidth]{figs/ex1_a_1_x.pdf}
     \caption{$x_d$ e $x$}
     \label{fig:ex1_a_1_x}
@@ -360,12 +359,12 @@ No caso de não ser possível calcular a derivada da trajetória e, dependendo d
   \end{minipage}
   \begin{minipage}{\linewidth}
   \centering
-    \begin{subfigure}[b]{0.45\textwidth}
+    \begin{subfigure}[b]{0.4\textwidth}
     \includegraphics[width=1\textwidth]{figs/ex1_a_1_e.pdf}
     \caption{$e = x_d - x$}
     \label{fig:ex1_a_1_e}
     \end{subfigure}
-    \begin{subfigure}[b]{0.45\textwidth}
+    \begin{subfigure}[b]{0.4\textwidth}
     \includegraphics[width=1\textwidth]{figs/ex1_a_1_dq.pdf}
     \caption{$u = \dot{\theta}$}
     \label{fig:ex1_a_1_dq}
@@ -380,7 +379,7 @@ No caso de não ser possível calcular a derivada da trajetória e, dependendo d
 \centering
   \begin{minipage}{\linewidth}
   \centering
-    \begin{subfigure}[b]{1\textwidth}
+    \begin{subfigure}[b]{0.4\textwidth}
     \includegraphics[width=1\textwidth]{figs/ex1_b_2_x.pdf}
     \caption{$x_d$ e $x$}
     \label{fig:ex1_b_2_x}
@@ -388,12 +387,12 @@ No caso de não ser possível calcular a derivada da trajetória e, dependendo d
   \end{minipage}
   \begin{minipage}{\linewidth}
   \centering
-    \begin{subfigure}[b]{0.45\textwidth}
+    \begin{subfigure}[b]{0.4\textwidth}
     \includegraphics[width=1\textwidth]{figs/ex1_b_2_e.pdf}
     \caption{$e = x_d - x$}
     \label{fig:ex1_b_2_e}
     \end{subfigure}
-    \begin{subfigure}[b]{0.45\textwidth}
+    \begin{subfigure}[b]{0.4\textwidth}
     \includegraphics[width=1\textwidth]{figs/ex1_b_2_dq.pdf}
     \caption{$u = \dot{\theta}$}
     \label{fig:ex1_b_2_dq}
@@ -408,7 +407,7 @@ No caso de não ser possível calcular a derivada da trajetória e, dependendo d
 \centering
   \begin{minipage}{\linewidth}
   \centering
-    \begin{subfigure}[b]{1\textwidth}
+    \begin{subfigure}[b]{0.4\textwidth}
     \includegraphics[width=1\textwidth]{figs/ex1_b_1_x.pdf}
     \caption{$x_d$ e $x$}
     \label{fig:ex1_b_1_x}
@@ -416,12 +415,12 @@ No caso de não ser possível calcular a derivada da trajetória e, dependendo d
   \end{minipage}
   \begin{minipage}{\linewidth}
   \centering
-    \begin{subfigure}[b]{0.45\textwidth}
+    \begin{subfigure}[b]{0.4\textwidth}
     \includegraphics[width=1\textwidth]{figs/ex1_b_1_e.pdf}
     \caption{$e = x_d - x$}
     \label{fig:ex1_b_1_e}
     \end{subfigure}
-    \begin{subfigure}[b]{0.45\textwidth}
+    \begin{subfigure}[b]{0.4\textwidth}
     \includegraphics[width=1\textwidth]{figs/ex1_b_1_dq.pdf}
     \caption{$u = \dot{\theta}$}
     \label{fig:ex1_b_1_dq}
@@ -436,7 +435,7 @@ No caso de não ser possível calcular a derivada da trajetória e, dependendo d
 \centering
   \begin{minipage}{\linewidth}
   \centering
-    \begin{subfigure}[b]{1\textwidth}
+    \begin{subfigure}[b]{0.4\textwidth}
     \includegraphics[width=1\textwidth]{figs/ex1_c_2_x.png}
     \caption{$x_d$ e $x$}
     \label{fig:ex1_c_2_x}
@@ -444,12 +443,12 @@ No caso de não ser possível calcular a derivada da trajetória e, dependendo d
   \end{minipage}
   \begin{minipage}{\linewidth}
   \centering
-    \begin{subfigure}[b]{0.45\textwidth}
+    \begin{subfigure}[b]{0.4\textwidth}
     \includegraphics[width=1\textwidth]{figs/ex1_c_2_e.pdf}
     \caption{$e = x_d - x$}
     \label{fig:ex1_c_2_e}
     \end{subfigure}
-    \begin{subfigure}[b]{0.45\textwidth}
+    \begin{subfigure}[b]{0.4\textwidth}
     \includegraphics[width=1\textwidth]{figs/ex1_c_2_dq.pdf}
     \caption{$u = \dot{\theta}$}
     \label{fig:ex1_c_2_dq}
@@ -464,7 +463,7 @@ No caso de não ser possível calcular a derivada da trajetória e, dependendo d
 \centering
   \begin{minipage}{\linewidth}
   \centering
-    \begin{subfigure}[b]{1\textwidth}
+    \begin{subfigure}[b]{0.4\textwidth}
     \includegraphics[width=1\textwidth]{figs/ex1_c_1_x.png}
     \caption{$x_d$ e $x$}
     \label{fig:ex1_c_1_x}
@@ -472,12 +471,12 @@ No caso de não ser possível calcular a derivada da trajetória e, dependendo d
   \end{minipage}
   \begin{minipage}{\linewidth}
   \centering
-    \begin{subfigure}[b]{0.45\textwidth}
+    \begin{subfigure}[b]{0.4\textwidth}
     \includegraphics[width=1\textwidth]{figs/ex1_c_1_e.pdf}
     \caption{$e = x_d - x$}
     \label{fig:ex1_c_1_e}
     \end{subfigure}
-    \begin{subfigure}[b]{0.45\textwidth}
+    \begin{subfigure}[b]{0.4\textwidth}
     \includegraphics[width=1\textwidth]{figs/ex1_c_1_dq.pdf}
     \caption{$u = \dot{\theta}$}
     \label{fig:ex1_c_1_dq}
@@ -487,5 +486,170 @@ No caso de não ser possível calcular a derivada da trajetória e, dependendo d
 \label{fig:ex1_c_1}
 \end{figure}
 
+
+\section{Controle Cinemático de Manipuladores Redundantes} % 1
+
+Diferente do manipulador anterior, o objetivo agora é controlar um manipulador redundante. Onde o Jacobiano perde posto por ter mais juntas do que graus de liberdade para a tarefa. 
+
+Nesse caso aparece um comportamento muito interessante, o espaço nulo do Jacobiano, que permite otimizar um grau de liberdade adicional.
+
+A função objetivo a ser otimizada pode ser de diversos tipos. Nesse trabalho, as escolhidas serão a \textbf{orientação},  a \textbf{manipulabilidade} e o \textbf{limite das juntas}.
+
+O manipulador proposto para estudar esse comportamento é o manipulador planar 3R, com comprimento dos 3 elos de $0.5m$.
+
+Assim como foi feito para o manipulador anterior, é necessário utilizar o método de Denavit-Hartenberg, cujos parâmetros estão na tabela \ref{tab:ex2_dh}.
+
+A posição inicial escolhida foi $ q_0 = [\pi, -\pi/2, -\pi/2]^T $, representada na figura \ref{fig:ex2_ready}.
+
+Neste caso, a trajetória desejada é um círculo de raio $0.25m$ com centro no ponto $[0.25 0.5]$. Parametrizada por $x_d$.
+
+
+   	\begin{gather*}
+	x_{d} = 
+	\begin{bmatrix} 
+	0.25 (1 - cos(\pi t)) \\ 
+	0.25 (2 + sin(\pi t)) \\
+	\end{bmatrix} \qquad t \in [0,4] \\
+	\end{gather*}
+
+
+\begin{table}[!ht]
+\centering
+\caption{Tabela de Denavit-Hartenberg do Manipulador Planar 3R.}
+\label{tab:ex2_dh}
+
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+Junta  & $\alpha (rad)$ & $A (m)$ & $\theta (rad)$ & $D (m)$ & $Offset (rad)$ \\ \hline
+$1$  & 0 & $0.5$ & $\theta_1$ & 0 & 0 \\ \hline
+$2$  & 0 & $0.5$ & $\theta_2$ & 0 & 0 \\ \hline
+$3$  & 0 & $0.5$ & $\theta_3$ & 0 & 0 \\ \hline
+
+\end{tabular}
+\end{table}
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=0.5\textwidth]{figs/ex2_planar_tetha0.pdf}
+\caption{Manipulador Planar 3R na posição inicial}
+\label{fig:ex2_ready}
+\end{figure}
+
+\subsection{Controle}
+
+Este caso é caracterizado por o numero de juntas $n$ ser maior do que o número de graus de liberdade da tarefa $m$. O que traria a necessidade de usar novamente a pseudo-inversa.
+
+Porém, diferente do caso anterior, esse tem outra particularidade. Como o manipulador é planar com todas as juntas de rotação no eixo $z$, duas linhas do Jacobiano serão nulas. Além disso, por todas as juntas estarem em todo o tempo no plano XY, a terceira linha do Jacobiano, referente a posição no eixo $z$, também será zero.
+
+Com isso, pode-se trabalhar com um Jacobiano reduzido chamado de Jacobiano Analítico ($J_a \in R^{3x3}$). Por $J_a$ ser quadrado e não singular, ele é inversível.
+
+Ao reduzir o Jacobiano, também se faz necessário reduzir o sinal de controle ($u \in R^{6}$), passando a ter dimensão 3.
+
+
+\subsubsection{Orientação}
+
+No primeiro caso de controle, pede-se para que a orientação também siga uma trajetória desejada ($\phi_d$).
+
+\begin{gather*}
+	u = \dot{\theta} \qquad J_a \in R^{3x3} \\
+	\dot{x} = J_a(\theta)\dot{\theta} = J_a(\theta)u \quad \Rightarrow \quad
+	u = J_a(\theta)^{-1}\dot{x} \\
+	u = J_a(\theta)^{-1} \bar{u} \\
+	\bar{u} = \dot{x_d} + K (x_d - x) \\
+	x_d = 
+	\begin{bmatrix} 
+	p_d \\ 
+	\phi_d \\
+	\end{bmatrix} \\
+	p_{d} = 
+	\begin{bmatrix} 
+	0.25 (1 - cos(\pi t)) \\ 
+	0.25 (2 + sin(\pi t)) \\
+	0 \\
+	\end{bmatrix}, \qquad 
+	\phi_{d} = 
+	\begin{bmatrix} 
+	0 \\ 
+	0 \\
+	sin(\pi t / 24) \\
+	\end{bmatrix} \quad \Rightarrow \quad 
+	\dot{\phi_d} = 
+	\begin{bmatrix} 
+	0 \\
+	0 \\
+	\dfrac{\pi cos(\pi t / 24)}{24} \\
+	\end{bmatrix} \qquad t \in [0,4] \\
+	x_d = 
+	\begin{bmatrix} 
+	x \\ 
+	y \\
+	z \\
+	\phi_1 \\
+	\phi_2 \\
+	\phi_3 \\
+	\end{bmatrix}, \quad
+	x_d = 
+	\begin{bmatrix} 
+	x \\ 
+	y \\
+	0 \\
+	0 \\
+	0 \\
+	\phi_3 \\
+	\end{bmatrix}
+\end{gather*}
+
+Para se controlar o sistema com 3 graus de liberdade, adiciona-se uma nova parcela no sintal de controle, o espaço nulo do Jacobiano, que é alcançado usando-se a pseudo-inversa dele. A variável $\mu$, o grau de liberdade adicional, é calculada multiplicando-se um ganho $K_0$ pela derivada da função $\omega(\theta)$ a ser otimizada.
+
+Isso não altera a equação do erro.
+
+\begin{gather*}
+	\bar{u} = J^{\dagger}[\dot{x_d} + K(x_d - x)] + (I - J^{\dagger}J)\mu \\
+	\dot{e} + Ke = 0 \\
+	\mu = K_0\left( \dfrac{\partial \omega(\theta)}{\partial \theta} \right)^T  \\
+	\omega(\theta) = 
+	\begin{bmatrix} 
+	0 \\
+	0 \\
+	sin(\pi t / 24) \\
+	\end{bmatrix}
+\end{gather*}
+\begin{gather*}
+	\phi_d = \theta_1 + \theta_2 + \theta_3 = sin(\pi t / 24) \\
+	\omega(\theta) = 
+	\begin{bmatrix} 
+	0 \\
+	0 \\
+	sin(\pi t / 24) \\
+	\end{bmatrix} \quad \Rightarrow \quad 
+	\dot{\omega}(\theta) = 
+	\begin{bmatrix} 
+	0 \\
+	0 \\
+	\dfrac{\pi cos(\pi t / 24)}{24} \\
+	\end{bmatrix}
+\end{gather*}
+ 
+\subsection{Funções Objetivo}
+
+\subsubsection{Orientação}
+
+Como observado anteriormente, uma das funções a ser otimizada é a orientação, que deve seguir uma trajetória parametrizada por $\phi_d$.
+
+\begin{gather*}
+	\phi_d = \theta_1 + \theta_2 + \theta_3 = sin(\pi t / 24) \\
+	\omega(\theta) = 
+	\begin{bmatrix} 
+	0 \\
+	0 \\
+	sin(\pi t / 24) \\
+	\end{bmatrix} \quad \Rightarrow \quad 
+	\dot{\omega}(\theta) = 
+	\begin{bmatrix} 
+	0 \\
+	0 \\
+	\dfrac{\pi cos(\pi t / 24)}{24} \\
+	\end{bmatrix}
+\end{gather*}
 
 \end{document}
