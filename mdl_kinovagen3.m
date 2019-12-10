@@ -42,7 +42,7 @@ if plot_figures
     end
 end
 
-traj_num = 3;
+traj_num = 2;
 control_num = 1;
 
 %jacob_max = 5.229;
@@ -131,7 +131,7 @@ if plot_figures
                 [X,Y] = meshgrid(-10:.1:10);
                 a=1; b=-1; c=1; d=(0.456 + 0.2);
                 Z=(d- a * X - b * Y)/c;
-                surf(X,Y,Z, C,'LineStyle', 'none', 'FaceAlpha', 0.5, 'EdgeAlpha', 0.5)
+                surf(X,Y,Z, 'LineStyle', 'none', 'FaceAlpha', 0.5, 'EdgeAlpha', 0.5)
                 colormap summer
                 xlabel('x'); ylabel('y'); zlabel('z');
                 hold off;

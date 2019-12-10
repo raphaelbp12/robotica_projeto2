@@ -2,6 +2,7 @@
 
 \documentclass[a4paper,11pt]{article}
 
+\usepackage{indentfirst}
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
 \usepackage{graphicx}
@@ -61,7 +62,7 @@ bindingoffset=0mm, top=20mm,bottom=20mm}
 % custom footers and headers
 \usepackage{fancyhdr}
 \pagestyle{fancy}
-\lhead{Projeto 1}
+\lhead{Projeto 2}
 \chead{}
 \rhead{2019.2}
 \lfoot{}
@@ -127,32 +128,174 @@ bindingoffset=0mm, top=20mm,bottom=20mm}
 
 \section{Controle Cinemático de Manipuladores} % 1
 
-\subsection{Controle}
+O exercício tem como objetivo o \textbf{controle cinemático} da posição do punho do manipulador, sem se preocupar com a orientação, nesse primeiro momento. Para isso, o manipulador escolhido foi um 7R, com a tabela de Denavit-Hartenberg (tabela \ref{tab:ex1_dh}) e a posição inicial ($q_0$ representada na figura \ref{fig:ex1_ready}) dadas.
 
-De acordo com a tabela de Denavit Hartenberg Standard, o manipulador Antropomórfico 6R possui um punho equivalente a um punho esférico, cujo tamanho dos elos é 0. Isto significa que as 3 últimas juntas não influenciam na posição do efetuador. O objetivo deste exercício é controlar a posição do efetuador dados 3 trajetórias, e nada é pedido em relação à orientação do manipulador. Portanto iremos trabalhar com um sistema reduzido em que apenas as 3 primeiras juntas serão controladas (as outras três juntas permanecerão na posição ready).
+Além disso, o enunciado define 3 trajetórias distintas, define os controles a serem implementados e insere restrições.
 
-No controle cinemático assume-se que a velocidade do manipulador é a variável manipulada.
+Como o objetivo é apenas controlar a posição do manipulador, pode-se ignorar as 3 últimas juntas, já que, pela tabela de DH, elas apenas influenciam na orientação do manipulador. Essa decisão implicará numa série de simplificações feitas no sistema, começando por sempre definir a posição e a velocidade dessas 3 juntas como $zero$.
+
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=1\textwidth]{figs/ex1_ready.pdf}
+\caption{Manipulador Antropomórfico na posição inicial}
+\label{fig:ex1_ready}
+\end{figure}
 
 \begin{gather*}
-J = \begin{bmatrix} J_p \\ J_o \end{bmatrix} \qquad
-\begin{bmatrix} \vec{v} \\ \vec{\omega} \end{bmatrix} = J\dot{\theta} = Ju
-= \begin{bmatrix}J_pu \\ J_ou\end{bmatrix} \\
-u = \begin{bmatrix}u_{13} \\ u_{46}\end{bmatrix} \qquad
-J_p = \begin{bmatrix}J_{p13} & J_{p46}\end{bmatrix} \\
-\vec{v} = J_{p13}u_{13} + J_{46}u_{46}
-\end{gather*}
-
-\begin{gather*}
-\norm{J^\dagger}_{max} = 4.277 \qquad
-\norm{\dot{x}_d}_{max} = 0.2356 \qquad
-\norm{e}_{max} = 0.1417 \\
-K_{base} \approx \dfrac{\dfrac{3}{\norm{J^\dagger}_{max}} - \norm{\dot{x}_d}_{max}}{\norm{e}_{max}} \approx 3.3
+\theta_5 = \theta_6 = \theta_7 = 0 \\
+\dot{\theta_5} = \dot{\theta_6} = \dot{\theta_7} = 0 \\
+q_0 = [0, 0, 0, \pi/2] \\
+\dot{\theta}_{max} = 3 rad/s \Rightarrow \norm{u_i} \leq 3 (i = 1,2,3)
 \end{gather*}
 
 \begin{table}[!ht]
 \centering
+\caption{Tabela de Denavit-Hartenberg do Manipulador Antropomórfico.}
+\label{tab:ex1_dh}
+
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+Junta  & $\alpha (rad)$ & $A (m)$ & $\theta (rad)$ & $D (m)$ & $Offset (rad)$ \\ \hline
+$1$  & $\pi/2$ & 0 & 0 & 0 & 0 \\ \hline
+$2$  & $\pi/2$ & 0 & 0 & 0 & $\pi$ \\ \hline
+$3$  & $\pi/2$ & 0 & 0 & $-0.4208$ & $\pi$ \\ \hline
+$4$  & $\pi/2$ & 0 & 0 & 0 & $\pi$ \\ \hline
+$5$  & $\pi/2$ & 0 & 0 & $-0.3143$ & $\pi$ \\ \hline
+$6$  & $\pi/2$ & 0 & 0 & 0 & $\pi$ \\ \hline
+$7$  & $\pi$ & 0 & 0 & 0 & $\pi$ \\ \hline
+
+\end{tabular}
+\end{table}
+
+\subsection{Controle}
+
+
+No controle cinemático assume-se que a velocidade do manipulador é a variável manipulada e que a \textbf{dinâmica} do manipulador pode ser \textbf{desprezada}. Além disso, considera-se que a velocidade das juntas responde instantaneamente ao sinal de entrada do motor da mesma, implicando na condição de $ u \approx \dot{\theta} $
+
+\begin{gather*}
+\begin{bmatrix} \vec{v} \\ \vec{\omega} \end{bmatrix} = J(\theta)\dot{\theta} \quad \Rightarrow \quad  \begin{bmatrix} \vec{v} \\ \vec{\omega} \end{bmatrix} = J(\theta)u\\
+u = \dot{\theta} \quad \Rightarrow \quad \dot{x} = J(\theta)u \\
+x(t) \longrightarrow x_d(t) \\
+e = x - x_d \\
+\end{gather*}
+
+O objetivo de controle é que o manipulador siga uma trajetória pré-determinada. Portanto, já que se conhece a trajetória, por conseguinte, também se conhece a sua derivada. O que permite adicionar informações no sistema de controle (ação \textit{feed-forward}, tornando possível a \textbf{liminação do erro em estado estacionário} ao seguir uma trajetória.
+
+Para que os cálculos sejam feitos, é necessário escolher uma base para expressar os vetores e calcular o Jacobiano. Já que a trajetória dada está expressa na base do sistema inercial, uma boa escolha é usar essa mesma base.
+
+Uma boa ideia para a lei de controle é eliminar as não-linearidades do sistema, incluindo-se a inversa do Jacobiano no sinal de controle.
+
+\begin{gather*}
+\dot{x} = J\bar{u} \\
+\bar{u} = J^{-1} [ \dot{x_d} + K (x_d - x) ] \\
+\dot{x} = JJ^{-1} [ \dot{x_d} + K (x_d - x) ] \\
+\dot{x} - \dot{x_d} = K (x_d - x) \\
+\dot{e}(t)= Ke(t)  \\
+e \longrightarrow 0, \quad t \longrightarrow \infty
+\end{gather*}
+
+Como no caso de um manipulador com 7 juntas, o Jacobiano não é uma matriz quadrada, ele não possui inversa. Sendo assim, se faz necessário o uso da \textbf{pseudo-inversa} ($ J^\dagger $).
+
+
+\begin{gather*}
+J^\dagger = J^T(JJ^T)^{-1} \quad \Rightarrow \quad JJ^\dagger = I \\
+\bar{u} = J^{\dagger} [ \dot{x_d} + K (x_d - x) ] \\
+\end{gather*}
+
+
+\subsection{Trajetórias}
+
+O enunciado considera 3 trajetórias de referência distintas, com $w_n = 2\pi/10 $. Além disso, não se pode usar derivadores puros. Logo, as derivadas das trajetórias foram calculadas como se segue:
+
+\renewcommand{\labelenumi}{\alph{enumi}}
+ \begin{enumerate}
+   \item Trajetória a
+   	\begin{gather*}
+	x_{d} = 
+	\begin{bmatrix} 
+	0.075 (sin(w_n t) + sin( 4 w_n t)) + 0.456 \\ 
+	0 \\ 
+	0.075 (cos(w_n t) + cos( 4 w_n t)) + 0.069 
+	\end{bmatrix} \\
+	\dot{x_{d}} = 
+	\begin{bmatrix}
+	0.075 w_n (cos(w_n t) + 4 cos( 4 w_n t)) \\ 
+	0 \\ 
+	-0.075 w_n (sin(w_n t) + 4 sin( 4 w_n t)) 
+	\end{bmatrix} \\
+	\end{gather*}
+   \item Trejetória b
+   	\begin{gather*}
+	x_{d} = 
+	\begin{bmatrix} 
+	0.075 sin(w_n t) + 0.456 \\ 
+	0 \\ 
+	0.075 cos(w_n t) + 0.2 
+	\end{bmatrix} \\
+	\dot{x_{d}} = 
+	\begin{bmatrix} 
+	0.075 w_n cos(w_n t) \\ 
+	0 \\ 
+	- 0.075 w_n sin(w_n t) 
+	\end{bmatrix} \\
+	\end{gather*}
+   \item Trejetória c
+   	\begin{gather*}
+	x_{d} = 
+	\begin{bmatrix} 
+	0.075 sin(w_n t) + 0.456 \\ 
+	0.075 (sin(w_n t) + cos(w_n t)) \\ 
+	0.075 cos(w_n t) + 0.2 
+	\end{bmatrix} \\
+	\dot{x_{d}} = 
+	\begin{bmatrix} 
+	0.075 w_n cos(w_n t) \\ 
+	0.075 w_n (sin(w_n t) - sin(w_n t)) \\ 
+	- 0.075 w_n sin(w_n t) 
+	\end{bmatrix} \\
+	\end{gather*}
+ \end{enumerate}
+
+
+\subsection{Simulação}
+
+O sistema representado na topologia da figura \ref{fig:ex1_simulink} está simulando a lei de controle com o feed-forward. Porém, para efeitos de comparação, o exercício pede para desligar essa ação. Para isso, basta apenas excluir o sinal de $xddot$ que é somado depois do ganho.
+
+Cada uma das trajetórias foi simulada com e sem ação do feed-forward.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=1\textwidth]{figs/ex1_simulink}
+\caption{Topologia do Simulink.}
+\label{fig:ex1_simulink}
+\end{figure}
+
+
+\subsection{Ganhos}
+
+Um ponto importante do trabalho é o ganho $K$ do controlador. Isso se dá porque foi pedido o maior ganho possível atendendo à especificação de $ \norm{u_i} \leq 3 (i = 1,2,3)$.
+
+Sendo assim, se faz necessário calcular a ordem de grandeza do ganho e depois se fazer o ajuste fino para cada um dos casos.
+
+\begin{gather*}
+\norm{\bar{u}} \leq 3 \quad \Rightarrow \quad \norm{J^{\dagger} [ \dot{x_d} + K (x_d - x) ]} \leq 3 \\
+\norm{J^{\dagger}}_{max} [ \norm{\dot{x_d}}_{max} + K_{base} \norm{e}_{max} ] = 3\\
+K_{base} = \dfrac{\dfrac{3}{\norm{J^\dagger}_{max}} - \norm{\dot{x}_d}_{max}}{\norm{e}_{max}} \\
+\norm{J^\dagger}_{max} = 4.277 \qquad
+\norm{\dot{x}_d}_{max} = 0.2356 \qquad
+\norm{e}_{max} = 0.1417 \\
+K_{base} \approx 3.3
+\end{gather*}
+
+Os valores $ \norm{J^\dagger}_{max} $, $ \norm{\dot{x}_d}_{max} $ e $ \norm{e}_{max} $ foram calculados graficamente na simulação, considerando o valor no instante inicial ($ \theta(0) $), onde se mostrou ser o maior valor em todos os casos.
+
+Após esse passo, foi feita a sintonia fina, chegando o mais próximo possível do valor máximo do sinal de controle em cada um dos casos. Os valores encontrados podem ser vistos na tabela \ref{tab:ex1_ganhos}.
+
+\begin{table}[!ht]
+\centering
 \caption{Ganhos para os controles com e sem Feed-forward em todas as 3 trajetórias.}
-\label{tab:ex5_ikine_configuracao}
+\label{tab:ex1_ganhos}
 
 \begin{tabular}{|c|c|c|}
 \hline
@@ -164,39 +307,17 @@ Trajetória 3     & $8.91$ & $8.57$ \\ \hline
 \end{table}
 
 
-\begin{figure}[!ht]
-\centering
-\includegraphics[width=1\textwidth]{figs/ex1_ready.pdf}
-\caption{Ex 1: Manipulador Antropomórfico na posição ready}
-\label{fig:ex1_ready}
-\end{figure}
+\subsection{Resultados}
 
-\begin{figure}[!ht]
-\centering
-  \begin{minipage}{\linewidth}
-  \centering
-    \begin{subfigure}[b]{1\textwidth}
-    \includegraphics[width=1\textwidth]{figs/ex1_a_1_x.pdf}
-    \caption{$x_d$ e $x$}
-    \label{fig:ex1_a_1_x}
-    \end{subfigure}
-  \end{minipage}
-  \begin{minipage}{\linewidth}
-  \centering
-    \begin{subfigure}[b]{0.45\textwidth}
-    \includegraphics[width=1\textwidth]{figs/ex1_a_1_e.pdf}
-    \caption{$e = x_d - x$}
-    \label{fig:ex1_a_1_e}
-    \end{subfigure}
-    \begin{subfigure}[b]{0.45\textwidth}
-    \includegraphics[width=1\textwidth]{figs/ex1_a_1_dq.pdf}
-    \caption{$u = \dot{\theta}$}
-    \label{fig:ex1_a_1_dq}
-    \end{subfigure}
-  \end{minipage}
-\caption{Ex 1: Trajetória $a$, controle com FF.}
-\label{fig:ex1_a_1}
-\end{figure}
+Cada uma das trajetórias tem dois conjuntos de figuras representando os dois controles pedidos (com e sem feed-forward). 
+
+Desses conjuntos, a figura (a) exibe a trajetórias desejada (em vermelho) e a trajetória simulada (em azul). A figura (b), por sua vez, exibe o sinal do erro ($x_d - x$). Já a figura (c) representa o sinal de controle $u$ para cada uma das 4 juntas controladas.
+
+Como esperado, o controle sem feed-forward não é capaz de tirar o erro em regime de estado estacionário, mesmo sendo muito pequeno. Os sinais de controle atendem à restrição pedida, sempre se aproximando o máximo possível do valor máximo.
+
+Pode-se observar na tabela \ref{tab:ex1_ganhos} que os ganhos para o controle sem ação feed-forward são iguais para todas as trajetórias, sendo limitado apenas pela restrição do sinal de controle. Porém, mesmo aumentando o valor do ganho não seria possível eliminar o erro em EE.
+
+No caso de não ser possível calcular a derivada da trajetória e, dependendo do caso de aplicação do manipulador, o controlador apenas com feed-back de posição pode ser suficiente, já que o erro em EE é pequeno comparado ao tamanho dos elos.
 
 
 \begin{figure}[!ht]
@@ -224,6 +345,34 @@ Trajetória 3     & $8.91$ & $8.57$ \\ \hline
   \end{minipage}
 \caption{Ex 1: Trajetória $a$, controle sem FF.}
 \label{fig:ex1_a_2}
+\end{figure}
+
+
+\begin{figure}[!ht]
+\centering
+  \begin{minipage}{\linewidth}
+  \centering
+    \begin{subfigure}[b]{1\textwidth}
+    \includegraphics[width=1\textwidth]{figs/ex1_a_1_x.pdf}
+    \caption{$x_d$ e $x$}
+    \label{fig:ex1_a_1_x}
+    \end{subfigure}
+  \end{minipage}
+  \begin{minipage}{\linewidth}
+  \centering
+    \begin{subfigure}[b]{0.45\textwidth}
+    \includegraphics[width=1\textwidth]{figs/ex1_a_1_e.pdf}
+    \caption{$e = x_d - x$}
+    \label{fig:ex1_a_1_e}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.45\textwidth}
+    \includegraphics[width=1\textwidth]{figs/ex1_a_1_dq.pdf}
+    \caption{$u = \dot{\theta}$}
+    \label{fig:ex1_a_1_dq}
+    \end{subfigure}
+  \end{minipage}
+\caption{Ex 1: Trajetória $a$, controle com FF.}
+\label{fig:ex1_a_1}
 \end{figure}
 
 
@@ -337,39 +486,6 @@ Trajetória 3     & $8.91$ & $8.57$ \\ \hline
 \caption{Ex 1: Trajetória $c$, controle com FF.}
 \label{fig:ex1_c_1}
 \end{figure}
-
-Como as dimensões dos últimos 3 elos são 0, o $J_{p46}$ será sempre $\begin{bmatrix}0 & 0 & 0\end{bmatrix}^T$, portanto trabalharemos com um sistema reduzido com $J_{p46}$. Também é preciso escolher uma base para expressar os vetores. Como a trajetória desejada é descrita no sistema inercial, o sistema também será descrito no sistema inercial.
-
-\begin{gather*}
-\vec{v} = \dot{\vec{x}} = J_{p13}u_{13}
-\end{gather*}
-
-Escolhendo trabalhar no sistema inercial teremos:
-
-\begin{gather*}
-(\vec{v})_0 = v = \dot{x} = (J_{p13})_0u_{13}
-\end{gather*}
-
-Pelo enunciado é preciso realizar o controle com duas formulações para $u_{13}$, uma que use o inverso de $J_{p13}$ e outro com a transposta de $J_{p13}$.
-
-\begin{gather*}
-u_{1} = (J_{p13})_0^{-1}\bar{u} = (J_{p13})_0^{-1}(\dot{x}_d + K(x_d - x)) \\
-u_{2} = (J_{p13})_0^T\bar{u} = (J_{p13})_0^T(\alpha\dot{x}_d + K(x_d - x))
-\end{gather*}
-
-Justificativa para $u_{2}$ com $\alpha \neq 0$? Não consegui encontrar uma função de Lyapunov que garanta $\dot{V} \leq 0$. Podemos provar que $u_{2}$ torna o sistema assintoticamente estável para o caso em que a trajetória desejada é uma constante ($\alpha = 0$), mas como as trajetórias desejadas do enunciado são variantes no tempo  não podemos garantir $\dot{V} \leq 0$, ou seja, $u_{2}$ com $\alpha = 0$ não consegue zerar o erro para as trajetórias desejadas. No caso da trajetória constante temos:
-
-\begin{gather*}
-2V = e^Te \\
-\dot{V} = e^T\dot{e} = e^T(\dot{x}_d - \dot{x}) = e^T(\dot{x}_d - (J_{p13})_0u) = \\ = e^T(\dot{x}_d - (J_{p13})_0(J_{p13})_0^T(\alpha \dot{x}_d + Ke)) \\
-\dot{x}_d = 0 \implies \dot{V} = -e^T(J_{p13})_0(J_{p13})_0^TKe = -K(e^T(J_{p13})_0)(e^T(J_{p13})_0)^T \\
-\dot{V} \leq 0
-\end{gather*}
-
-
-Para verificar os resultados obtidos pelas multiplicações da questão 6. Foi usada a função \textit{SerialLink.jacob0}. Os resultados estão na figura \ref{fig:ex6_verif}.
-
-As duas figuras mostram que os resultados obtidos não estão corretos.
 
 
 \end{document}

@@ -6,7 +6,7 @@ Model {
     NumRootInports	    0
     NumRootOutports	    0
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.65"
+    ComputedModelVersion    "1.66"
     NumModelReferences	    0
     NumTestPointedSignals   1
     TestPointedSignal {
@@ -74,9 +74,9 @@ Model {
 	IsActive		[1]
 	ViewObjType		"SimulinkTopLevel"
 	LoadSaveID		"0"
-	Extents			[894.0, 577.0]
+	Extents			[902.0, 610.0]
 	ZoomFactor		[1.0]
-	Offset			[-235.24194295172757, -52.667243757928354]
+	Offset			[-235.24194295172757, -52.667243757928361]
       }
       Object {
 	$PropName		"DockComponentsInfo"
@@ -96,11 +96,11 @@ Model {
       "AAAAAAA+wAAABYARABvAGMAawBXAGkAZABnAGUAdAA0AAAAAAD/////AAAAAAAAAAD7AAAAUgBHAEwAVQBFADIAIAB0AHIAZQBlACAAYwBvAG0Ac"
       "ABvAG4AZQBuAHQALwBHAEwAVQBFADIAIAB0AHIAZQBlACAAYwBvAG0AcABvAG4AZQBuAHQAAAAAAP////8AAABbAP///wAAAAEAAAAAAAAAAPwCA"
       "AAAAfsAAABUAEcATABVAEUAMgA6AFAAcgBvAHAAZQByAHQAeQBJAG4AcwBwAGUAYwB0AG8AcgAvAFAAcgBvAHAAZQByAHQAeQAgAEkAbgBzAHAAZ"
-      "QBjAHQAbwByAAAAAAD/////AAAAKwD///8AAAOkAAACfQAAAAEAAAACAAAAAQAAAAL8AAAAAQAAAAIAAAAP/////wAAAAAA/////wAAAAAAAAAA/"
+      "QBjAHQAbwByAAAAAAD/////AAAAKwD///8AAAOsAAACngAAAAEAAAACAAAAAQAAAAL8AAAAAQAAAAIAAAAP/////wAAAAAA/////wAAAAAAAAAA/"
       "////wEAAAAA/////wAAAAAAAAAA/////wAAAAAA/////wAAAAAAAAAA/////wAAAAAA/////wAAAAAAAAAA/////wAAAAAA/////wAAAAAAAAAA/"
       "////wEAAAB6/////wAAAAAAAAAA/////wEAAADe/////wAAAAAAAAAA/////wAAAAAA/////wAAAAAAAAAA/////wEAAAFY/////wAAAAAAAAAA/"
-      "////wAAAAAA/////wAAAAAAAAAA/////wAAAAAA/////wAAAAAAAAAA/////wAAAAAA/////wAAAAAAAAAA/////wEAAANG/////wAAAAAAAAAA/"
-      "////wEAAAN1/////wAAAAAAAAAA/////wAAAAAA/////wAAAAAAAAAA"
+      "////wAAAAAA/////wAAAAAAAAAA/////wAAAAAA/////wAAAAAAAAAA/////wAAAAAA/////wAAAAAAAAAA/////wEAAANO/////wAAAAAAAAAA/"
+      "////wEAAAN9/////wAAAAAAAAAA/////wAAAAAA/////wAAAAAAAAAA"
     }
   }
   HideAutomaticNames	  on
@@ -110,9 +110,9 @@ Model {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "rbp"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Sun Dec 08 22:27:29 2019"
-  RTWModifiedTimeStamp	  497741248
-  ModelVersionFormat	  "1.%<AutoIncrement:65>"
+  LastModifiedDate	  "Mon Dec 09 18:41:17 2019"
+  RTWModifiedTimeStamp	  497814075
+  ModelVersionFormat	  "1.%<AutoIncrement:66>"
   ConfigurationManager	  "none"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -2463,19 +2463,19 @@ Model {
       DstPort		      1
     }
     Line {
-      ZOrder		      171
-      SrcBlock		      "traj 3"
-      SrcPort		      1
-      Points		      [40, 0; 0, -260]
-      DstBlock		      "Manual Switch"
-      DstPort		      2
-    }
-    Line {
       ZOrder		      172
       SrcBlock		      "Demux"
       SrcPort		      2
       Points		      [47, 0; 0, 37; 153, 0]
       DstBlock		      "Sum1"
+      DstPort		      2
+    }
+    Line {
+      ZOrder		      174
+      SrcBlock		      "traj 2"
+      SrcPort		      1
+      Points		      [55, 0; 0, -180]
+      DstBlock		      "Manual Switch"
       DstPort		      2
     }
     Annotation {
@@ -2902,9 +2902,6 @@ Stateflow {
     screen		    [1 1 1440 900 1]
     treeNode		    [0 24 0 0]
     viewObj		    23
-    visible		    1
-    subviewS {
-    }
     ssIdHighWaterMark	    5
     decomposition	    CLUSTER_CHART
     type		    EML_CHART
@@ -3030,9 +3027,6 @@ Stateflow {
     screen		    [1 1 1440 900 1]
     treeNode		    [0 31 0 0]
     viewObj		    30
-    visible		    1
-    subviewS {
-    }
     ssIdHighWaterMark	    5
     decomposition	    CLUSTER_CHART
     type		    EML_CHART
