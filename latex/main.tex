@@ -146,7 +146,7 @@ Como o objetivo é apenas controlar a posição do manipulador, pode-se ignorar 
 \theta_5 = \theta_6 = \theta_7 = 0 \\
 \dot{\theta_5} = \dot{\theta_6} = \dot{\theta_7} = 0 \\
 q_0 = [0, 0, 0, \pi/2] \\
-\dot{\theta}_{max} = 3 rad/s \Rightarrow \norm{u_i} \leq 3 (i = 1,2,3)
+\dot{\theta}_{max} = 3 rad/s \Rightarrow \norm{u_i} \leq 3 (i = 1,2,3,4)
 \end{gather*}
 
 \begin{table}[!ht]
@@ -191,7 +191,7 @@ Uma boa ideia para a lei de controle é eliminar as não-linearidades do sistema
 \bar{u} = J^{-1} [ \dot{x_d} + K (x_d - x) ] \\
 \dot{x} = JJ^{-1} [ \dot{x_d} + K (x_d - x) ] \\
 \dot{x} - \dot{x_d} = K (x_d - x) \\
-\dot{e}(t)= Ke(t)  \\
+\dot{e}(t)= -Ke(t)  \\
 e \longrightarrow 0, \quad t \longrightarrow \infty
 \end{gather*}
 
@@ -251,7 +251,7 @@ O enunciado considera 3 trajetórias de referência distintas, com $w_n = 2\pi/1
 	\dot{x_{d}} = 
 	\begin{bmatrix} 
 	0.075 w_n cos(w_n t) \\ 
-	0.075 w_n (sin(w_n t) - sin(w_n t)) \\ 
+	0.075 w_n (cos(w_n t) - sin(w_n t)) \\ 
 	- 0.075 w_n sin(w_n t) 
 	\end{bmatrix} \\
 	\end{gather*}
@@ -274,7 +274,7 @@ Cada uma das trajetórias foi simulada com e sem ação do feed-forward.
 
 \subsection{Ganhos}
 
-Um ponto importante do trabalho é o ganho $K$ do controlador. Isso se dá porque foi pedido o maior ganho possível atendendo à especificação de $ \norm{u_i} \leq 3 (i = 1,2,3)$.
+Um ponto importante do trabalho é o ganho $K$ do controlador. Isso se dá porque foi pedido o maior ganho possível atendendo à especificação de $ \norm{u_i} \leq 3 (i = 1,2,3,4)$.
 
 Sendo assim, se faz necessário calcular a ordem de grandeza do ganho e depois se fazer o ajuste fino para cada um dos casos.
 
@@ -550,6 +550,8 @@ Ao reduzir o Jacobiano, também se faz necessário reduzir o sinal de controle (
 
 No primeiro caso de controle, pede-se para que a orientação também siga uma trajetória desejada ($\phi_d$).
 
+Como foi adicionado mais um grau de liberdade, o sistema passa a ter 3 graus de liberdade (posição x, y e orientação) e tem 3 graus de mobilidade, formado por suas 3 juntas. Trabalhando com o Jacobiano Analítico, passamos a ter um Jacobiano quadrado não-singular, logo, inversível.
+
 \begin{gather*}
 	u = \dot{\theta} \qquad J_a \in R^{3x3} \\
 	\dot{x} = J_a(\theta)\dot{\theta} = J_a(\theta)u \quad \Rightarrow \quad
@@ -560,7 +562,8 @@ No primeiro caso de controle, pede-se para que a orientação também siga uma t
 	\begin{bmatrix} 
 	p_d \\ 
 	\phi_d \\
-	\end{bmatrix} \\
+	\end{bmatrix} \qquad 
+	\phi_d = \theta_1 + \theta_2 + \theta_3 = sin(\pi t / 24) \\
 	p_{d} = 
 	\begin{bmatrix} 
 	0.25 (1 - cos(\pi t)) \\ 
@@ -598,8 +601,12 @@ No primeiro caso de controle, pede-se para que a orientação também siga uma t
 	\phi_3 \\
 	\end{bmatrix}
 \end{gather*}
+ 
+\subsubsection{Funções Objetivo}
 
-Para se controlar o sistema com 3 graus de liberdade, adiciona-se uma nova parcela no sintal de controle, o espaço nulo do Jacobiano, que é alcançado usando-se a pseudo-inversa dele. A variável $\mu$, o grau de liberdade adicional, é calculada multiplicando-se um ganho $K_0$ pela derivada da função $\omega(\theta)$ a ser otimizada.
+Diferente do caso anterior, os próximos casos não tem a orientação para ser controlada, logo, voltaria a ser um sistema com apenas dois graus de liberdade, as posições em x e em y. Porém, a ideia agora é adicionar mais um grau de liberdade, utilizando o \textbf{espaço nulo do Jacobiano}.
+
+Para se controlar o sistema com 3 graus de liberdade, adiciona-se uma nova parcela no sinal de controle, o espaço nulo do Jacobiano, que é alcançado usando-se a pseudo-inversa dele. A variável $\mu$, o grau de liberdade adicional, é calculada multiplicando-se um ganho $K_0$ pela derivada da função $\omega(\theta)$ a ser otimizada.
 
 Isso não altera a equação do erro.
 
@@ -607,49 +614,222 @@ Isso não altera a equação do erro.
 	\bar{u} = J^{\dagger}[\dot{x_d} + K(x_d - x)] + (I - J^{\dagger}J)\mu \\
 	\dot{e} + Ke = 0 \\
 	\mu = K_0\left( \dfrac{\partial \omega(\theta)}{\partial \theta} \right)^T  \\
-	\omega(\theta) = 
-	\begin{bmatrix} 
-	0 \\
-	0 \\
-	sin(\pi t / 24) \\
-	\end{bmatrix}
 \end{gather*}
+
+\quad \textbullet \quad Manipulabilidade
+
+A primeira função objetivo é a controlabilidade, que consiste numa medida de distância que o manipulador está de uma posição de singularidade do Jacobiano.
+
 \begin{gather*}
-	\phi_d = \theta_1 + \theta_2 + \theta_3 = sin(\pi t / 24) \\
 	\omega(\theta) = 
 	\begin{bmatrix} 
 	0 \\
-	0 \\
-	sin(\pi t / 24) \\
+	0.5 sin^2(\theta_2) \\
+	0.5 sin^2(\theta_3) \\
 	\end{bmatrix} \quad \Rightarrow \quad 
 	\dot{\omega}(\theta) = 
 	\begin{bmatrix} 
 	0 \\
+	sin(\theta_2)cos(\theta_2) \\
+	sin(\theta_3)cos(\theta_3) \\
+	\end{bmatrix} \quad \Rightarrow \quad 
+	\mu = K_0\begin{bmatrix} 
 	0 \\
-	\dfrac{\pi cos(\pi t / 24)}{24} \\
-	\end{bmatrix}
+	sin(\theta_2)cos(\theta_2) \\
+	sin(\theta_3)cos(\theta_3) \\
+	\end{bmatrix}\\
 \end{gather*}
- 
-\subsection{Funções Objetivo}
 
-\subsubsection{Orientação}
+\quad \textbullet \quad Limite das Juntas
 
-Como observado anteriormente, uma das funções a ser otimizada é a orientação, que deve seguir uma trajetória parametrizada por $\phi_d$.
+O segundo caso de função objetivo é o limite de cada uma das juntas.
 
 \begin{gather*}
-	\phi_d = \theta_1 + \theta_2 + \theta_3 = sin(\pi t / 24) \\
+	-2 \pi \leq \theta_1 \leq 2\pi; \quad -\pi/2 \leq \theta_2 \leq \pi/2; \quad -3\pi/2 \leq \theta_3 \leq -\pi/2 \\
+	\omega(\theta) = - \dfrac{1}{2n}\sum_{i=1}^{n} \left( \dfrac{\theta_i - \bar{\theta}_i}{\theta_{iM} - \theta_{im}} \right)^2 \\
 	\omega(\theta) = 
 	\begin{bmatrix} 
-	0 \\
-	0 \\
-	sin(\pi t / 24) \\
+	- \frac{\theta_1^2}{96\pi^2} \\
+	- \frac{\theta_2^2}{6\pi^2} \\
+	- \frac{(\pi + \theta_3)^2}{6\pi^2} \\
 	\end{bmatrix} \quad \Rightarrow \quad 
 	\dot{\omega}(\theta) = 
 	\begin{bmatrix} 
-	0 \\
-	0 \\
-	\dfrac{\pi cos(\pi t / 24)}{24} \\
-	\end{bmatrix}
+	- \frac{\theta_1}{48\pi^2} \\
+	- \frac{\theta_2}{3\pi^2} \\
+	- \frac{\pi + \theta_3}{3\pi^2} \\
+	\end{bmatrix} \quad \Rightarrow \quad 
+	\mu = K_0\begin{bmatrix} 
+	- \frac{\theta_1}{48\pi^2} \\
+	- \frac{\theta_2}{3\pi^2} \\
+	- \frac{\pi + \theta_3}{3\pi^2} \\
+	\end{bmatrix}\\
 \end{gather*}
+
+\newpage
+
+\subsection{Simulações}
+
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=0.9\textwidth]{figs/ex2_1_simulink}
+\caption{Topologia do Simulink Controle de Orientação.}
+\label{fig:ex2_1_simulink}
+\end{figure}
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=0.9\textwidth]{figs/ex2_2a_simulink}
+\caption{Topologia do Simulink Manipulabilidade.}
+\label{fig:ex2_2a_simulink}
+\end{figure}
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=0.9\textwidth]{figs/ex2_2b_simulink}
+\caption{Topologia do Simulink Limite das Juntas.}
+\label{fig:ex2_2b_simulink}
+\end{figure}
+
+\subsection{Resultados}
+
+Nos três casos, qualquer ganho positivo seria capaz de levar o erro para zero. E, como se pode ver, os erros são praticamente zero.
+
+Os manipuladores estão sendo exibidos na posição final, para que se pudesse ter uma ideia visual da trajetória percorrida.
+
+Como o problema não apresenta restrições, foi escolhido um ganho relativamente alto. Isso é importante para o Limite das Juntas, que, para um ganho baixo, não é capaz de atender à especificação.
+
+Mesmo com o erro sendo praticamente zero em todos os casos, as juntas se comportam de maneira muito distintas. Esse comportamento pode ser visto no gráfico (b) de cada controle.
+
+Um comportamento importante, que não é fácil de analisar apenas pelos gráficos, é a colisão dos elos. No controle de orientação restrita, os elos chegam muito perto de colidir. E, na otimização do Limites das Juntas, os elos chegam a se colidir.
+
+Pode-se comparar a \textbf{manipulabilidade} entre o caso da controle orientação e a otimização da manipulabilidade. No primeiro caso, a manipulabilidade chega bem próximo de zero duas vezes, nesses instantes, pode-se verificar picos nos gráficos do sinal de controle e no erro. Já no caso da otimização, a manipulabilidade tem um comportamento muito mais confortável, tendo seu menor valor maior do que $0.9$.
+
+% Controle 1
+\begin{figure}[!ht]
+\centering
+  \begin{minipage}{\linewidth}
+  \centering
+    \begin{subfigure}[b]{1\textwidth}
+    \centering
+    \includegraphics[width=0.6\textwidth]{figs/ex2_1_traj.pdf}
+    \caption{Trajetória}
+    \label{fig:ex2_1_traj}
+    \end{subfigure}
+  \end{minipage}
+  \begin{minipage}{\linewidth}
+  \centering
+    \begin{subfigure}[b]{0.49\textwidth}
+    \includegraphics[width=1\textwidth]{figs/ex2_1_q.pdf}
+    \caption{Ângulo das juntas}
+    \label{fig:ex2_1_q}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.49\textwidth}
+    \includegraphics[width=1\textwidth]{figs/ex2_1_e.pdf}
+    \caption{Erro da posição do efetuador}
+    \label{fig:ex2_1_e}
+    \end{subfigure}
+  \end{minipage}
+  \begin{minipage}{\linewidth}
+  \centering
+    \begin{subfigure}[b]{0.49\textwidth}
+    \includegraphics[width=1\textwidth]{figs/ex2_1_dq.pdf}
+    \caption{Sinal de controle/velocidade das juntas}
+    \label{fig:ex2_1_dq}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.49\textwidth}
+    \includegraphics[width=1\textwidth]{figs/ex2_1_manip.pdf}
+    \caption{Manipulabilidade}
+    \label{fig:ex2_1_manip}
+    \end{subfigure}
+  \end{minipage}
+\caption{Ex 2: Orientação, K = 50}
+\label{fig:ex2_1}
+\end{figure}
+
+% Controle 1
+\begin{figure}[!ht]
+\centering
+  \begin{minipage}{\linewidth}
+  \centering
+    \begin{subfigure}[b]{1\textwidth}
+    \centering
+    \includegraphics[width=0.6\textwidth]{figs/ex2_2a_traj.pdf}
+    \caption{Trajetória}
+    \label{fig:ex2_2a_traj}
+    \end{subfigure}
+  \end{minipage}
+  \begin{minipage}{\linewidth}
+  \centering
+    \begin{subfigure}[b]{0.49\textwidth}
+    \includegraphics[width=1\textwidth]{figs/ex2_2a_q.pdf}
+    \caption{Ângulo das juntas}
+    \label{fig:ex2_2a_q}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.49\textwidth}
+    \includegraphics[width=1\textwidth]{figs/ex2_2a_e.pdf}
+    \caption{Erro da posição do efetuador}
+    \label{fig:ex2_2a_e}
+    \end{subfigure}
+  \end{minipage}
+  \begin{minipage}{\linewidth}
+  \centering
+    \begin{subfigure}[b]{0.49\textwidth}
+    \includegraphics[width=1\textwidth]{figs/ex2_2a_dq.pdf}
+    \caption{Sinal de controle/velocidade das juntas}
+    \label{fig:ex2_2a_dq}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.49\textwidth}
+    \includegraphics[width=1\textwidth]{figs/ex2_2a_manip.pdf}
+    \caption{Manipulabilidade}
+    \label{fig:ex2_2a_manip}
+    \end{subfigure}
+  \end{minipage}
+\caption{Ex 2: Manipulabilidade, K = 50, $K_0$ = 50}
+\label{fig:ex2_2a}
+\end{figure}
+
+% Controle 1
+\begin{figure}[!ht]
+\centering
+  \begin{minipage}{\linewidth}
+  \centering
+    \begin{subfigure}[b]{1\textwidth}
+    \centering
+    \includegraphics[width=0.6\textwidth]{figs/ex2_2b_traj.pdf}
+    \caption{Trajetória}
+    \label{fig:ex2_2b_traj}
+    \end{subfigure}
+  \end{minipage}
+  \begin{minipage}{\linewidth}
+  \centering
+    \begin{subfigure}[b]{0.49\textwidth}
+    \includegraphics[width=1\textwidth]{figs/ex2_2b_q.pdf}
+    \caption{Ângulo das juntas}
+    \label{fig:ex2_2b_q}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.49\textwidth}
+    \includegraphics[width=1\textwidth]{figs/ex2_2b_e.pdf}
+    \caption{Erro da posição do efetuador}
+    \label{fig:ex2_2b_e}
+    \end{subfigure}
+  \end{minipage}
+  \begin{minipage}{\linewidth}
+  \centering
+    \begin{subfigure}[b]{0.49\textwidth}
+    \includegraphics[width=1\textwidth]{figs/ex2_2b_dq.pdf}
+    \caption{Sinal de controle/velocidade das juntas}
+    \label{fig:ex2_2b_dq}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.49\textwidth}
+    \includegraphics[width=1\textwidth]{figs/ex2_2b_lim_jun.pdf}
+    \caption{Limite das Juntas}
+    \label{fig:ex2_2b_manip}
+    \end{subfigure}
+  \end{minipage}
+\caption{Ex 2: Limite das Juntas, K = 50, $K_0$ = 50}
+\label{fig:ex2_2b}
+\end{figure}
 
 \end{document}

@@ -87,7 +87,7 @@ control_num = 1;
                 end
         end
 
-sim('kinctrlkinova');
+%sim('kinctrlkinova');
 if plot_figures
             close(1);
             figure(1);

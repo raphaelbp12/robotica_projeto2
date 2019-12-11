@@ -104,7 +104,7 @@ if plot_figures
     end
 end
 
-for i = 1:1 % controle 1, 2, 2a1, 2a100 e 2b1
+for i = 2:2 % controle 1, 2, 2a1, 2a100 e 2b1
     figure(1);
     close(1);
     K0 = 0;
@@ -118,13 +118,12 @@ for i = 1:1 % controle 1, 2, 2a1, 2a100 e 2b1
             ctrl = 2
             ctrl_s = '2a';
             K = 50;
-            sim('planar3dof_sim2a');
+            %sim('planar3dof_sim2a');
         case 3 % controle 2a1
             ctrl = 3
             ctrl_s = '2b';
             K = 50;
-            K0 = 1;
-            sim('planar3dof_sim2b');
+            %sim('planar3dof_sim2b');
     end
     
     if plot_figures
