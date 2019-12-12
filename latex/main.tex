@@ -694,7 +694,7 @@ O segundo caso de função objetivo é o limite de cada uma das juntas.
 
 \subsection{Resultados}
 
-Nos três casos, qualquer ganho positivo seria capaz de levar o erro para zero. E, como se pode ver, os erros são praticamente zero.
+Nos três casos, qualquer ganho positivo seria capaz de levar o erro para zero. E, como se pode ver (figuras \ref{fig:ex2_1}, \ref{fig:ex2_2a} e \ref{fig:ex2_2b}), os erros são praticamente zero.
 
 Os manipuladores estão sendo exibidos na posição final, para que se pudesse ter uma ideia visual da trajetória percorrida.
 
@@ -831,5 +831,168 @@ Pode-se comparar a \textbf{manipulabilidade} entre o caso da controle orientaç�
 \caption{Ex 2: Limite das Juntas, K = 50, $K_0$ = 50}
 \label{fig:ex2_2b}
 \end{figure}
+
+\pagebreak
+
+\section{Controle Cinemático por Servo Visão}
+
+O primeiro passo, assim como foi feito para os manipuladores anteriores, é construir a tabela de Denavit-Hartenberg (tabela \ref{tab:ex3_dh}. O manipulador proposto é planar 2R, com o comprimento do primeiro elo de $0.45m$ e do segundo de $0.5m$. A configuração inicial é dada por $q_0 = [-pi/20, -pi/2]^T$.
+
+O objetivo desse exercício é controlar um manipulador representado na imagem da câmera e fazê-lo seguir uma trajetória na imagem.
+
+O controle pode ser novamente um proporcional com ação feed-forward, usando a inversa do Jacobiano. Porém, nesse caso, o Jacobiano não é em relação à base do efetuador, e sim ao plano da câmera, chamado de Jacobiano da Imagem.
+
+A transformação do espaço de trabalho para a câmera é dada por:
+
+
+\begin{gather*}
+	x_c = K_p x + x_{c0} \\
+	f = 8mm; \quad z_0=0.64m; \quad \alpha = 72727pixels/m; \quad O_c = 		\begin{bmatrix} 
+		320 \\
+		240 \\
+	\end{bmatrix}; \quad p_{bc} = 
+	\begin{bmatrix} 
+		0.5 \\
+		-0.38 \\
+	\end{bmatrix}; \quad \phi = 0 \\
+	K_p = \dfrac{f}{z_0}\begin{bmatrix} 
+		\alpha_1 & 0 \\
+		0 & \alpha_2 \\
+	\end{bmatrix}\begin{bmatrix} 
+		c_{\phi} & s_{\phi} \\
+		s_{\phi} & -c_{\phi} \\
+	\end{bmatrix}
+\end{gather*}
+
+Considere que $x_{cd}$ seja a trajetória desejada do efetuador no plano da câmera. Deseja-se projetar um controle em que $x_c \longrightarrow x_{cd} \quad \Rightarrow \quad e_{cd} \longrightarrow 0$.
+
+\begin{gather*}
+	\dot{x_c} = K_p \dot{x} \\
+	\dot{e}_{cd} = \dot{x}_{cd} - \dot{x}_c = \dot{x}_{cd} - K_p \dot{x} = \dot{x}_{cd} - K_p J(\theta)u \\
+	\dot{e}_{cd} = \dot{x}_{cd} - K_p J(\theta)u \\
+	u = (K_p J(\theta))^{-1} [\dot{x}_{cd} + K(x_{cd} - x_c)] \\
+	\dot{e}_{cd} + K e_{cd} = 0 \\
+\end{gather*}
+
+A trajetória de refenrência com $w_n = 1$ é parametrizada por:
+
+
+
+\begin{gather*}
+	x_{cd} = 
+	\begin{bmatrix} 
+		300 + 60 (sin(w_n t) + sin(1.5 w_n t)) \\
+		200 + 60 (sin(w_n t + 1.6) + sin(1.5 w_n t + 1.6)) \\
+	\end{bmatrix} \\
+	\dot{x}_{cd} = 
+	\begin{bmatrix} 
+		60 w_n (cos(w_n t) + 1.5 cos(1.5 w_n t)) \\
+		60 w_n (cos(w_n t + 1.6) + 1.5 cos(1.5 w_n t + 1.6)) \\
+	\end{bmatrix}
+\end{gather*}
+
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=1\textwidth]{figs/ex3_planar_tetha0.pdf}
+\caption{Ex 4: Juntas em $q_0$ do manipulador planar 2R}
+\label{fig:ex3_planar}
+\end{figure}
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=0.9\textwidth]{figs/ex3_simulink}
+\caption{Topologia do Simulink Controle Por Servo Visão.}
+\label{fig:ex3_simulink}
+\end{figure}
+
+\subsection{Resultados}
+
+Os resultados da simulação de $\phi = 0$ pode ser observado na figura \ref{fig:ex3_1}, já o resultado para $\phi = \pi/4$ pode ser visto na figura \ref{fig:ex3_2}.
+
+Como esperado, e visto nos casos anteriores, o erro converge para zero sem problemas, dado que o ganho K seja positivo. O que vai fazer diferença é a velocidade de convergência. Para ganhos acima de 5, o erro converge tão rápido que nem se pode ver diferença nas trajetórias. Sendo assim, deixou-se o ganho igual a 1.
+
+A influência da rotação da câmera é percebida na posição e orientação de todo o manipulador em relação à trajetória desejada, o que muda um pouco o transiente do controle. Porém, com a rápida convergência, não se pode notar tanta diferença.
+
+\begin{figure}[ht]
+\centering
+  \begin{minipage}{\linewidth}
+  \centering
+    \begin{subfigure}[b]{0.55\textwidth}
+    \includegraphics[width=1\textwidth]{figs/ex3_1_traj.pdf}
+    \caption{Trajetória do manipulador}
+    \label{fig:ex3_1_traj}
+    \end{subfigure}
+  \end{minipage}
+  \begin{minipage}{\linewidth}
+  \centering
+    \begin{subfigure}[b]{0.49\textwidth}
+    \includegraphics[width=1\textwidth]{figs/ex3_1_x_c.pdf}
+    \caption{Trajetórias $x_{cd}$ e $x_c$}
+    \label{fig:ex3_1_x_c}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.49\textwidth}
+    \includegraphics[width=1\textwidth]{figs/ex3_1_e_c.pdf}
+    \caption{Erro $e_{c} = x_{cd} - x_c$}
+    \label{fig:ex3_1_e_c}
+    \end{subfigure}
+  \end{minipage}
+  \begin{minipage}{\linewidth}
+  \centering
+    \begin{subfigure}[b]{0.49\textwidth}
+    \includegraphics[width=1\textwidth]{figs/ex3_1_q.pdf}
+    \caption{Posição das juntas $\theta$}
+    \label{fig:ex3_1_q}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.49\textwidth}
+    \includegraphics[width=1\textwidth]{figs/ex3_1_dq.pdf}
+    \caption{Sinal de controle $u = \dot{\theta}$.}
+    \label{fig:ex3_1_dq}
+    \end{subfigure}
+  \end{minipage}
+\caption{Ex 4: Resultado da simulação para $\phi = 0$.}
+\label{fig:ex3_1}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+  \begin{minipage}{\linewidth}
+  \centering
+    \begin{subfigure}[b]{0.55\textwidth}
+    \includegraphics[width=1\textwidth]{figs/ex3_2_traj.pdf}
+    \caption{Trajetória do manipulador}
+    \label{fig:ex3_2_traj}
+    \end{subfigure}
+  \end{minipage}
+  \begin{minipage}{\linewidth}
+  \centering
+    \begin{subfigure}[b]{0.49\textwidth}
+    \includegraphics[width=1\textwidth]{figs/ex3_2_x_c.pdf}
+    \caption{Trajetórias $x_{cd}$ e $x_c$}
+    \label{fig:ex3_2_x_c}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.49\textwidth}
+    \includegraphics[width=1\textwidth]{figs/ex3_2_e_c.pdf}
+    \caption{Erro $e_{c} = x_{cd} - x_c$}
+    \label{fig:ex3_2_e_c}
+    \end{subfigure}
+  \end{minipage}
+  \begin{minipage}{\linewidth}
+  \centering
+    \begin{subfigure}[b]{0.49\textwidth}
+    \includegraphics[width=1\textwidth]{figs/ex3_2_q.pdf}
+    \caption{Posição das juntas $\theta$}
+    \label{fig:ex3_2_q}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.49\textwidth}
+    \includegraphics[width=1\textwidth]{figs/ex3_2_dq.pdf}
+    \caption{Sinal de controle $u = \dot{\theta}$.}
+    \label{fig:ex3_2_dq}
+    \end{subfigure}
+  \end{minipage}
+\caption{Ex 4: Resultado da simulação para $\phi = \pi/4$.}
+\label{fig:ex3_2}
+\end{figure}
+
 
 \end{document}

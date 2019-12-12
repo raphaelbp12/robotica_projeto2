@@ -1,0 +1,178 @@
+clear;
+
+l1 = 0.45;
+l2 = 0.5;
+q0 = [-pi/20 -pi/2]';
+
+%             th    d       a         alpha      type  offset    mdh
+L(1) = Link([ 0     0      l1          0          0     0],  'standard');
+L(2) = Link([ 0 	0      l2          0          0     0],  'standard');
+
+planar = SerialLink(L, 'name', 'Planar (2R)');
+
+% trajetória
+syms t real;
+w_n = 1;
+x_cd = [300 + 60*(sin(w_n*t) + sin(1.5*w_n*t)); 200 + 60*(sin(w_n*t + 1.6) + sin(1.5*w_n*t + 1.6))];
+dx_cd = diff(x_cd, t);
+matlabFunction(x_cd, 'File', 'x_cdFunc');
+matlabFunction(dx_cd, 'File', 'dx_cdFunc');
+
+% configuração da servo visão
+f = 0.008;
+z0 = 0.64;
+alpha = 72727;
+O_c = [320 240]';
+p_bc = [0.5 -0.38]';
+
+% plot
+save_figure = true;
+plot_figures = true;
+
+% plot q0
+if plot_figures
+    figure(1);
+    close(1);
+    planar.plot([0 0], 'floorlevel', -0.3, 'noname', 'notiles', 'zoom', 0.6);
+    if save_figure
+        export_fig(['latex/figs/ex3_planar_0'], '-pdf', '-painters', '-transparent');
+    end
+    
+    figure(1);
+    close(1);
+    planar.plot(q0', 'floorlevel', -0.3, 'noname', 'notiles');
+    xlabel('x_1'); ylabel('x_2'); zlabel('x_3');
+    hold off
+    if save_figure
+        export_fig(['latex/figs/ex3_planar_tetha0'], '-pdf', '-painters', '-transparent');
+    end
+    
+    figure(1);
+    close(1);
+    trplot([eye(3) [0 0 0]'; [0 0 0 1]], 'rgb', 'arrow', 'length', 0.6, 'frame', '0', 'notext');
+    axis([-0.5 1.5 -1.5 1 -0.5 0.7]);
+    hold on;
+    trplot(planar.fkine(q0'), 'rgb', 'arrow', 'length', 0.6, 'frame', 'efetuador', 'notext');
+    trplot([rotx(pi) [p_bc; z0]; [0 0 0 1]], 'rgb', 'arrow', 'length', 0.6, 'frame', 'camera', 'notext');
+    xlabel('x_1'); ylabel('x_2'); zlabel('x_3');
+    hold off
+    view([-60, 30]);
+    if save_figure
+        export_fig(['latex/figs/ex3_planar_tetha0_camera'], '-pdf', '-painters', '-transparent');
+    end
+end
+
+for i = 1:2
+    if i == 1
+        ctrl_s = '1';
+        phi = 0;
+        
+    else
+        ctrl_s = '2';
+        phi = pi/4;
+    end
+    K = 1;
+    Kp = f*alpha*[1 0; 0 -1]*[cos(phi) sin(phi); -sin(phi) cos(phi)]/z0;
+    x_c0 = -Kp*p_bc + O_c;
+    
+    sim('ex3sim');
+    
+    if plot_figures
+        % preparando plots
+        figure(1);
+        close(1);
+        stime = size(x.time);
+        xplot = zeros(1, stime(1));
+        yplot = zeros(1, stime(1));
+        zplot = zeros(1, stime(1));
+        
+        % plot trajetória
+        %planar.plot([0 0], 'floorlevel', -0.3, 'noname', 'notiles', 'trail', 'b', 'delay', 0, 'noraise');
+        %planar.plot(q0', 'floorlevel', -0.3, 'noname', 'notiles', 'trail', 'b', 'delay', 0, 'noraise');
+        sq = size(q.signals.values)
+        planar.plot(q.signals.values(:,:,1)', 'floorlevel', -0.3, 'noname', 'notiles', 'delay', 0, 'noraise');
+        view(0,90);
+        for j = 1:sq(3)
+        	planar.animate(q.signals.values(:,:,j)');
+        end
+        xlabel('x_1'); ylabel('x_2'); zlabel('x_3');
+        if save_figure
+            export_fig(['latex/figs/ex3_' ctrl_s '_traj'], '-pdf', '-painters', '-transparent');
+        end
+
+        
+        % plot x
+        x_d = inv(Kp)*([x_cd.signals.values(:,1) x_cd.signals.values(:,2)] - repmat(x_c0',stime(1),1) )';
+        plot3(x_d(1,:)', x_d(2,:)', zeros(stime(1),1), 'r');
+        hold on;
+        for k = 1:stime(1)
+            xplot(k) = x.signals.values(1, 1, k);
+            yplot(k) = x.signals.values(2, 1, k);
+        end
+        plot3(xplot, yplot, zeros(stime(1),1));
+        grid on;
+        xlabel('x_1'); ylabel('x_2'); zlabel('x_3');
+        hold off;
+        legend({'$x_d$', '$x$'},'Interpreter','latex');
+
+        % plot x_c
+        plot3(x_cd.signals.values(:,1)', x_cd.signals.values(:,2)', zeros(stime(1),1), 'r');
+        hold on;
+        for k = 1:stime(1)
+            xplot(k) = x_c.signals.values(1, 1, k);
+            yplot(k) = x_c.signals.values(2, 1, k);
+        end
+        plot3(xplot, yplot, zeros(stime(1),1));
+        grid on;
+        xlabel('x_{c1} (pixels)'); ylabel('x_{c2} (pixels)'); zlabel('z_{c3}');
+        hold off;
+        view(0,90);
+        legend({'$x_{cd}$', '$x_c$'},'Interpreter','latex');
+        if save_figure
+            export_fig(['latex/figs/ex3_' ctrl_s '_x_c'], '-pdf', '-painters', '-transparent');
+        end
+
+        % plot erro
+        x1plot = zeros(1, stime(1));
+        x2plot = zeros(1, stime(1));
+        for j = 1:stime(1)
+            x1plot(j) = e_c.signals.values(1, 1, j);
+            x2plot(j) = e_c.signals.values(2, 1, j);
+        end
+        plot(e_c.time, x1plot, e_c.time, x2plot);
+        legend('e_{c1}', 'e_{c2}');
+        xlabel('time (s)'); ylabel('erro (pixels)');
+        if save_figure
+            export_fig(['latex/figs/ex3_' ctrl_s '_e_c'], '-pdf', '-painters', '-transparent');
+        end
+        
+        % plot q
+        q1plot = zeros(1, stime(1));
+        q2plot = zeros(1, stime(1));
+        for k = 1:stime(1)
+            q1plot(k) = q.signals.values(1, 1, k);
+            q2plot(k) = q.signals.values(2, 1, k);
+        end
+        plot(e_c.time, q1plot, e_c.time, q2plot);
+        xlabel('time (s)'); ylabel('$\theta$','Interpreter','latex');
+        legend({'$\theta_1$', '$\theta_2$'},'Interpreter','latex');
+        if save_figure
+            export_fig(['latex/figs/ex3_' ctrl_s '_q'], '-pdf', '-painters', '-transparent');
+        end
+        
+        % plot dq
+        dq1plot = zeros(1, stime(1));
+        dq2plot = zeros(1, stime(1));
+        for k = 1:stime(1)
+            dq1plot(k) = dq.signals.values(1, 1, k);
+            dq2plot(k) = dq.signals.values(2, 1, k);
+        end
+        plot(e_c.time, dq1plot, e_c.time, dq2plot);
+        xlabel('time (s)'); ylabel('u = $\dot{\theta}$','Interpreter','latex');
+        legend({'$\dot{\theta}_1$', '$\dot{\theta}_2$'},'Interpreter','latex');
+        if save_figure
+            export_fig(['latex/figs/ex3_' ctrl_s '_dq'], '-pdf', '-painters', '-transparent');
+        end
+        
+    end
+end
